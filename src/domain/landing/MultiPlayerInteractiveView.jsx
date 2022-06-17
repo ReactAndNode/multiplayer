@@ -68,9 +68,9 @@ const MultiPlayerInteractiveView = () => {
           emoji={cursor.emoji}
         />
       ))}
-      {isUserActive && (
+      {isUserActive && getCurrentUser().uid && (
         <Cursor
-          id={getCurrentUser().uid}
+          id={getCurrentUser().uid || ""}
           x={currCursorPosition.x}
           y={currCursorPosition.y}
           isClicking={isClicking}
