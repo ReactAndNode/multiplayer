@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import Cursor from "./Cursor";
 import * as firebaseService from "../util/firebase_service";
 import { getCurrentUser } from "../util/firebase_service";
+import { updateMouseMovementWithLimit } from "../util/throttle";
+
+let countBad = 0;
 
 const MultiPlayerInteractiveView = () => {
   const [isUserActive, setIsUserActive] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
   const [emoji, setEmoji] = useState("");
   const [otherActiveUsers, setOtherActiveUsers] = useState({});
+  const [inThrottle, setInThrottle] = useState(false);
   const [currCursorPosition, setCurrCursorPosition] = useState({
     x: 0,
     y: 0,
@@ -19,7 +23,9 @@ const MultiPlayerInteractiveView = () => {
     }
 
     try {
-      firebaseService.updatesCursorPosition({ x: e.clientX, y: e.clientY });
+      // countBad++;
+      // console.log("Bad: ", countBad);
+      updateMouseMovementWithLimit(inThrottle, setInThrottle, e);
 
       setCurrCursorPosition({
         x: e.clientX,
@@ -68,7 +74,7 @@ const MultiPlayerInteractiveView = () => {
           emoji={cursor.emoji}
         />
       ))}
-      {isUserActive && getCurrentUser().uid && (
+      {isUserActive && getCurrentUser() && getCurrentUser().uid && (
         <Cursor
           id={getCurrentUser().uid || ""}
           x={currCursorPosition.x}
